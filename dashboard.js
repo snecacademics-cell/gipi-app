@@ -12,31 +12,29 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const streamClasses = {
-    "SHE": ["H1", "H2", "D1", "D2", "D3"],
-    "SHARIA": ["H1", "H2", "D1", "D2", "D3", "D4", "PG1", "PG2"],
-    "SHE PLUS": ["S1", "S2", "S3", "U1", "U2", "B1", "B2", "B3"],
-    "SHARIA PLUS": ["S1", "S2", "S3", "U1", "U2", "B1", "B2", "B3"],
-    "BAITHUL AYN": ["BS1", "BS2", "BS3", "BU1", "BU2", "BB1", "BB2", "BB3", "PG1", "PG2"]
+// നിങ്ങൾ ആവശ്യപ്പെട്ടതുപോലെയുള്ള കൃത്യമായ സെമസ്റ്റർ / ക്ലാസ് ക്രമീകരണം
+const streamSemesters = {
+    "SHE": Array.from({length: 10}, (_, i) => `Sem ${i + 1}`),         // 10 Semesters
+    "SHE PLUS": Array.from({length: 16}, (_, i) => `Sem ${i + 1}`),    // 16 Semesters
+    "SHARIA PLUS": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`), // 20 Semesters
+    "SHARIA": Array.from({length: 16}, (_, i) => `Sem ${i + 1}`),      // 16 Semesters
+    "BAITHUL AYN": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`)  // 20 Semesters
 };
 
-// Custom Modal Handler
 function showCustomModal(title, message, isSuccess = true) {
     const modal = document.getElementById('customModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalMessage = document.getElementById('modalMessage');
-    const modalIcon = document.getElementById('modalIcon');
-    const modalIconContainer = document.getElementById('modalIconContainer');
-
-    modalTitle.innerText = title;
-    modalMessage.innerText = message;
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalMessage').innerText = message;
+    
+    const iconContainer = document.getElementById('modalIconContainer');
+    const icon = document.getElementById('modalIcon');
     
     if (isSuccess) {
-        modalIconContainer.className = "modal-icon success";
-        modalIcon.className = "fa-solid fa-circle-check";
+        iconContainer.className = "modal-icon success";
+        icon.className = "fa-solid fa-circle-check";
     } else {
-        modalIconContainer.className = "modal-icon error";
-        modalIcon.className = "fa-solid fa-circle-exclamation";
+        iconContainer.className = "modal-icon error";
+        icon.className = "fa-solid fa-circle-exclamation";
     }
     modal.style.display = 'flex';
 }
@@ -45,7 +43,7 @@ function closeModal() {
     document.getElementById('customModal').style.display = 'none';
 }
 
-// Enter Key Navigation
+// Enter Key Navigation (Tab Behavior)
 document.addEventListener('DOMContentLoaded', () => {
     const formFields = document.querySelectorAll('#perfForm input, #perfForm select');
     formFields.forEach((field, index) => {
@@ -63,44 +61,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ലോഗിൻ സ്റ്റേറ്റ് പരിശോധിച്ചു കോളേജ് ഡാറ്റ എടുക്കൽ
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // യൂസർ ഇമെയിലിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ കൃത്യമായി എടുക്കുന്നു
         const emailParts = user.email.split('@');
         const affiliationNo = emailParts[0].trim();
         
-        console.log("Logged in Affiliation No:", affiliationNo);
-
         db.collection("colleges").doc(affiliationNo).get().then((doc) => {
             if (doc.exists) {
                 const collegeData = doc.data();
+                // കോളേജിന്റെ പേര് കൂടുതൽ ബ്രൈറ്റായി ഹെഡറിൽ കാണിക്കുന്നു
                 document.getElementById('collegeTitle').innerText = `${collegeData.affiliationNo} - ${collegeData.collegeName}`;
                 
                 let stream = collegeData.stream ? collegeData.stream.trim().toUpperCase() : "SHE";
-                if (!streamClasses[stream]) {
+                if (!streamSemesters[stream]) {
                     stream = "SHE";
                 }
 
                 document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
 
                 const classSelect = document.getElementById('classSelect');
-                classSelect.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
+                classSelect.innerHTML = '<option value="">സെമസ്റ്റർ തിരഞ്ഞെടുക്കുക</option>';
                 
-                streamClasses[stream].forEach(cls => {
+                streamSemesters[stream].forEach(sem => {
                     const option = document.createElement('option');
-                    option.value = cls;
-                    option.textContent = cls;
+                    option.value = sem;
+                    option.textContent = sem;
                     classSelect.appendChild(option);
                 });
 
             } else {
-                document.getElementById('collegeTitle').innerText = `അഫിലിയേഷൻ നം ${affiliationNo} - കോളേജ് ഡാറ്റ ഫയർബേസിൽ കണ്ടെത്തിയില്ല`;
-                document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> സ്ട്രീം ലഭ്യമല്ല`;
+                document.getElementById('collegeTitle').innerText = `അഫിലിയേഷൻ നം ${affiliationNo} - കോളേജ് ഡാറ്റ ലഭ്യലല്ല`;
             }
         }).catch((error) => {
             console.error("Error getting college data:", error);
-            document.getElementById('collegeTitle').innerText = "ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പിശക് സംഭവിച്ചു";
         });
     } else {
         window.location.href = 'index.html';
@@ -123,7 +116,7 @@ document.getElementById('perfForm').addEventListener('submit', function(e) {
     const resultDiv = document.getElementById('resultOutput');
     resultDiv.style.display = 'block';
     resultDiv.innerHTML = `
-        തിരഞ്ഞെടുത്ത ക്ലാസ്: ${selectedClass} <br>
+        തിരഞ്ഞെടുത്ത സെമസ്റ്റർ: ${selectedClass} <br>
         മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% &nbsp;|&nbsp; ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}% <br>
         ആകെ GIPI സ്കോർ: ${overallPercentage.toFixed(2)}%
     `;
@@ -132,7 +125,7 @@ document.getElementById('perfForm').addEventListener('submit', function(e) {
     if (user) {
         const affiliationNo = user.email.split('@')[0];
         db.collection("colleges").doc(affiliationNo).collection("marks").add({
-            class: selectedClass,
+            semester: selectedClass,
             relObtained, relTotal, secObtained, secTotal, overallPercentage,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
