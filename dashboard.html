@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIPI - ഡാഷ്‌ബോർഡ്</title>
+    <title>GIPI - സ്ഥാപന ഡാഷ്‌ബോർഡ്</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -19,47 +19,56 @@
         }
         .dashboard-container {
             background: #ffffff;
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 850px;
             box-sizing: border-box;
         }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #1e3c72;
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+        }
+        .logout-btn {
+            background: #fc5c65;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: #e04852;
+            transform: translateY(-2px);
+        }
         .header-box {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 15px;
             text-align: center;
             margin-bottom: 30px;
-            position: relative;
-        }
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.4);
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
         }
         .stream-badge {
-            background-color: rgba(255,255,255,0.25);
+            background-color: rgba(255, 255, 255, 0.25);
             color: #ffffff;
             padding: 6px 18px;
             border-radius: 50px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: bold;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .form-row {
             display: flex;
@@ -104,10 +113,15 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="header-box">
+        <!-- Top Bar with Logout Button -->
+        <div class="top-bar">
+            <span style="font-size: 15px; font-weight: 600;"><i class="fa-solid fa-user-shield"></i> സ്ഥാപന പോർട്ടൽ</span>
             <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> ലോഗ് ഔട്ട്</button>
-            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 24px;">ലോഡ് ചെയ്യുന്നു...</h2>
-            <div id="streamBadge" class="stream-badge">സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
+        </div>
+
+        <div class="header-box">
+            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
+            <div id="streamBadge" class="stream-badge"><i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
         </div>
         
         <form id="perfForm">
