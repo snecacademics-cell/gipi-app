@@ -1,4 +1,3 @@
-// ഫയർബേസ് കോൺഫിഗറേഷൻ
 const firebaseConfig = {
     apiKey: "AIzaSyAoCSN0BznAiThsvUETim_cYDvOes4S2vI",
     authDomain: "gipi-app.firebaseapp.com",
@@ -13,7 +12,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// സ്ട്രീമുകൾ അനുസരിച്ചുള്ള ക്ലാസുകളുടെ ലിസ്റ്റ് ഡിഫൈൻ ചെയ്യുന്നു
+// സ്ട്രീമുകൾ അനുസരിച്ചുള്ള ക്ലാസുകൾ
 const streamClasses = {
     "SHE": ["H1", "H2", "D1", "D2", "D3"],
     "SHARIA": ["H1", "H2", "D1", "D2", "D3", "D4", "PG1", "PG2"],
@@ -22,7 +21,6 @@ const streamClasses = {
     "BAITHUL AYN": ["BS1", "BS2", "BS3", "BU1", "BU2", "BB1", "BB2", "BB3", "PG1", "PG2"]
 };
 
-// ലോഗിൻ ചെയ്ത കോളേജിന്റെ പേരും സ്ട്രീമും ഫെച്ച് ചെയ്ത് കാണിക്കുന്നു
 auth.onAuthStateChanged((user) => {
     if (user) {
         const affiliationNo = user.email.split('@')[0];
@@ -30,16 +28,22 @@ auth.onAuthStateChanged((user) => {
         db.collection("colleges").doc(affiliationNo).get().then((doc) => {
             if (doc.exists) {
                 const collegeData = doc.data();
-                document.getElementById('collegeTitle').innerText = collegeData.collegeName;
+                document.getElementById('collegeTitle').innerText = `${collegeData.affiliationNo} - ${collegeData.collegeName}`;
                 
-                const stream = collegeData.stream ? collegeData.stream.trim().toUpperCase() : "SHE";
+                // ഷീറ്റിൽ നിന്നെടുത്ത സ്ട്രീം കൃത്യമായി ക്ലീൻ ചെയ്ത് എടുക്കുന്നു
+                let stream = collegeData.stream ? collegeData.stream.trim().toUpperCase() : "SHE";
+                
+                // ഒരുക്കിവെച്ച സ്ട്രീമുകളിൽ പെടാത്തതാണെങ്കിൽ ഡിഫോൾട്ടായി SHE വെക്കുന്നു
+                if (!streamClasses[stream]) {
+                    stream = "SHE";
+                }
+
                 document.getElementById('streamBadge').innerText = `സ്ട്രീം: ${stream}`;
 
-                // സ്ട്രീം അനുസരിച്ച് ക്ലാസ് ഡ്രോപ്ഡൗൺ ഫിൽ ചെയ്യുന്നു
                 const classSelect = document.getElementById('classSelect');
                 classSelect.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
                 
-                const classes = streamClasses[stream] || ["Class 1", "Class 2", "Class 3"];
+                const classes = streamClasses[stream];
                 classes.forEach(cls => {
                     const option = document.createElement('option');
                     option.value = cls;
@@ -58,7 +62,6 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// മാർക്ക് കാൽക്കുലേറ്റ് ചെയ്ത് സേവ് ചെയ്യുന്ന ഭാഗം
 document.getElementById('perfForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -74,7 +77,7 @@ document.getElementById('perfForm').addEventListener('submit', function(e) {
 
     document.getElementById('resultOutput').innerHTML = `
         തിരഞ്ഞെടുത്ത ക്ലാസ്: ${selectedClass} <br>
-        മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% | ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}% <br>
+        മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% &nbsp;|&nbsp; ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}% <br>
         ആകെ GIPI സ്കോർ: ${overallPercentage.toFixed(2)}%
     `;
 
