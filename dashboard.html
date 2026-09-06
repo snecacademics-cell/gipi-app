@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <h2>സ്ഥാപന പ്രകടന വിലയിരുത്തൽ</h2>
+    <div class="dashboard-container" style="width: 500px;">
+        <!-- കോളേജിന്റെ പേര് ഇവിടെ ഓട്ടോമാറ്റിക്കായി വരും -->
+        <h2 id="collegeTitle" style="color: #007bff; text-align: center;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
+        <h3 style="text-align: center; font-size: 16px; color: #555;">സ്ഥാപന പ്രകടന വിലയിരുത്തൽ</h3>
+        
         <form id="perfForm">
             <h3>മതപരം (Religious)</h3>
             <label>നേടിയ ആകെ മാർക്ക്:</label>
@@ -27,23 +30,10 @@
         <div id="resultOutput" style="margin-top: 20px; font-weight: bold; text-align: center;"></div>
     </div>
 
-    <script>
-        document.getElementById('perfForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const relObtained = parseFloat(document.getElementById('relObtained').value);
-            const relTotal = parseFloat(document.getElementById('relTotal').value);
-            const secObtained = parseFloat(document.getElementById('secObtained').value);
-            const secTotal = parseFloat(document.getElementById('secTotal').value);
-
-            const relPercentage = (relObtained / relTotal) * 100;
-            const secPercentage = (secObtained / secTotal) * 100;
-
-            document.getElementById('resultOutput').innerHTML = `
-                മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% <br>
-                ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}%
-            `;
-        });
-    </script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
