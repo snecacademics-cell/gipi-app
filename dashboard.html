@@ -181,7 +181,6 @@
             "BAITHUL AYN": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`)
         };
 
-        // ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് ലോഗിൻ ചെയ്ത കോളേജ് വിവരങ്ങൾ എടുക്കുന്നു
         const affNo = localStorage.getItem("gipi_affNo");
         const collegeName = localStorage.getItem("gipi_collegeName");
         const stream = localStorage.getItem("gipi_stream");
@@ -189,7 +188,9 @@
         if (!affNo) {
             window.location.replace('index.html');
         } else {
-            document.getElementById('collegeTitle').innerText = `${affNo} - ${collegeName}`;
+            // അഫിലിയേഷൻ നമ്പറുകൾ ഒഴിവാക്കി കോളേജിന്റെ പേര് മാത്രം ഡിസ്‌പ്ലേ ചെയ്യുന്നു
+            document.getElementById('collegeTitle').innerText = collegeName;
+            
             let cleanStream = stream ? stream.trim().toUpperCase() : "SHE";
             if (!streamSemesters[cleanStream]) cleanStream = "SHE";
 
