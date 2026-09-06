@@ -125,14 +125,14 @@
             errorMsg.style.display = 'none';
 
             try {
-                // ഫയർസ്റ്റോറിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ പരിശോധിക്കുന്നു
+                console.log("Checking affiliation number:", affNo);
                 const docRef = await db.collection("colleges").doc(affNo).get();
                 
                 if (docRef.exists) {
                     const collegeData = docRef.data();
-                    console.log("Found College:", collegeData);
+                    console.log("College Data Found:", collegeData);
+                    console.log("Input Password:", password, "DB Password:", collegeData.password);
                     
-                    // പാസ്‌വേഡ് ചെക്ക് ചെയ്യുന്നു (String ആയും Number ആയും ഒത്തുനോക്കാൻ == ഉപയോഗിക്കുന്നു)
                     if (String(collegeData.password).trim() === String(password).trim()) {
                         localStorage.setItem("gipi_affNo", affNo);
                         localStorage.setItem("gipi_collegeName", collegeData.collegeName);
@@ -140,15 +140,15 @@
 
                         window.location.href = 'dashboard.html';
                     } else {
-                        console.log("Password mismatch");
+                        console.warn("Password mismatch!");
                         errorMsg.style.display = 'block';
                     }
                 } else {
-                    console.log("College document not found");
+                    console.warn("College document not found in Firestore for ID:", affNo);
                     errorMsg.style.display = 'block';
                 }
             } catch (error) {
-                console.error("Login Error: ", error);
+                console.error("Firestore Error:", error);
                 errorMsg.style.display = 'block';
             }
         });
