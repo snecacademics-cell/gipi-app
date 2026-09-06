@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIPI - സ്ഥാപന രജിസ്ട്രേഷൻ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>സ്ഥാപന രജിസ്ട്രേഷൻ (GIPI)</h2>
+        <form id="signupForm">
+            <label for="regAffiliationNo">അഫിലിയേഷൻ നമ്പർ:</label>
+            <input type="text" id="regAffiliationNo" required placeholder="ഉദാ: 1001">
+
+            <label for="regPassword">പാസ്‌വേർഡ് (കുറഞ്ഞത് 6 അക്ഷരം):</label>
+            <input type="password" id="regPassword" required placeholder="പാസ്‌വേർഡ് നൽകുക">
+
+            <button type="submit">രജിസ്റ്റർ ചെയ്യുക</button>
+        </form>
+        <p id="signupError" class="error"></p>
+        <p style="text-align: center; margin-top: 15px;">
+            ഇതിനകം അക്കൗണ്ട് ഉണ്ടോ? <a href="index.html">ലോഗിൻ ചെയ്യുക</a>
+        </p>
+    </div>
+
+    <!-- Firebase SDK Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
