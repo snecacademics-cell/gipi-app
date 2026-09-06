@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIPI - സ്ഥാപന ഡാഷ്‌ബോർഡ്</title>
-    <!-- Font Awesome 6.4.0 -->
+    <title>GIPI - ഡാഷ്‌ബോർഡ്</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -23,7 +21,7 @@
             background: #ffffff;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             width: 100%;
             max-width: 850px;
             box-sizing: border-box;
@@ -35,17 +33,33 @@
             border-radius: 15px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
+            position: relative;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.4);
         }
         .stream-badge {
-            background-color: rgba(255, 255, 255, 0.25);
+            background-color: rgba(255,255,255,0.25);
             color: #ffffff;
-            padding: 8px 20px;
+            padding: 6px 18px;
             border-radius: 50px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             display: inline-block;
-            margin-top: 12px;
+            margin-top: 10px;
         }
         .form-row {
             display: flex;
@@ -70,16 +84,10 @@
             border: 1px solid #cbd5e1;
             font-size: 15px;
             box-sizing: border-box;
-            outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background-color: #f8fafc;
+            outline: none;
         }
-        input:focus, select:focus {
-            border-color: #2a5298;
-            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15);
-            background-color: #fff;
-        }
-        button.submit-btn {
+        .submit-btn {
             width: 100%;
             height: 50px;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -89,63 +97,22 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
             margin-top: 15px;
-        }
-        button.submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(42, 82, 152, 0.4);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(5px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-card {
-            background: #fff;
-            padding: 35px;
-            border-radius: 30px;
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .modal-icon { font-size: 50px; margin-bottom: 20px; }
-        .modal-icon.success { color: #05c46b; }
-        .modal-icon.error { color: #fc5c65; }
-        .modal-btn {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="header-box">
-            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
-            <div id="streamBadge" class="stream-badge"><i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> ലോഗ് ഔട്ട്</button>
+            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 24px;">ലോഡ് ചെയ്യുന്നു...</h2>
+            <div id="streamBadge" class="stream-badge">സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
         </div>
         
         <form id="perfForm">
             <div class="form-group">
-                <label for="classSelect"><i class="fa-solid fa-chalkboard-user" style="margin-right: 8px; color: #2a5298;"></i>സെമസ്റ്റർ / ക്ലാസ് തിരഞ്ഞെടുക്കുക:</label>
+                <label>സെമസ്റ്റർ / ക്ലാസ് തിരഞ്ഞെടുക്കുക:</label>
                 <select id="classSelect" required>
                     <option value="">ആദ്യം സ്ട്രീം ലോഡ് ചെയ്യപ്പെടുന്നു...</option>
                 </select>
@@ -155,7 +122,7 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <h4 style="color: #1e3c72; margin-bottom: 15px; font-size: 16px;"><i class="fa-solid fa-book-quran" style="margin-right: 8px;"></i>മതപരം (Religious)</h4>
+                    <h4 style="color: #1e3c72; margin-bottom: 15px;">മതപരം (Religious)</h4>
                     <label>നേടിയ ആകെ മാർക്ക്:</label>
                     <input type="number" id="relObtained" required placeholder="ഉദാ: 450">
                     <label style="margin-top: 12px;">പരമാവധി ആകെ മാർക്ക്:</label>
@@ -163,7 +130,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <h4 style="color: #1e3c72; margin-bottom: 15px; font-size: 16px;"><i class="fa-solid fa-book-open" style="margin-right: 8px;"></i>ഭൗതികം (Secular)</h4>
+                    <h4 style="color: #1e3c72; margin-bottom: 15px;">ഭൗതികം (Secular)</h4>
                     <label>നേടിയ ആകെ മാർക്ക്:</label>
                     <input type="number" id="secObtained" required placeholder="ഉദാ: 420">
                     <label style="margin-top: 12px;">പരമാവധി ആകെ മാർക്ക്:</label>
@@ -177,19 +144,94 @@
         <div id="resultOutput" style="margin-top: 25px; font-weight: bold; text-align: center; font-size: 16px; color: #1e3c72; background: #eef2f7; padding: 15px; border-radius: 15px; display: none;"></div>
     </div>
 
-    <!-- Custom Modal Structure -->
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-card">
-            <div id="modalIconContainer" class="modal-icon success"><i id="modalIcon" class="fa-solid fa-circle-check"></i></div>
-            <h3 id="modalTitle" style="margin: 0 0 10px 0; color: #1e293b;">വിജയകരമാണ്</h3>
-            <p id="modalMessage" style="color: #64748b; margin: 0; line-height: 1.5; font-size: 15px;"></p>
-            <button class="modal-btn" onclick="closeModal()">ശരി</button>
-        </div>
-    </div>
-
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="dashboard.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoCSN0BznAiThsvUETim_cYDvOes4S2vI",
+            authDomain: "gipi-app.firebaseapp.com",
+            projectId: "gipi-app",
+            storageBucket: "gipi-app.firebasestorage.app",
+            messagingSenderId: "922633997761",
+            appId: "1:922633997761:web:24abef2b23c2506cce3340",
+            measurementId: "G-Z4G2JRGGDL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const streamSemesters = {
+            "SHE": Array.from({length: 10}, (_, i) => `Sem ${i + 1}`),
+            "SHE PLUS": Array.from({length: 16}, (_, i) => `Sem ${i + 1}`),
+            "SHARIA PLUS": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`),
+            "SHARIA": Array.from({length: 16}, (_, i) => `Sem ${i + 1}`),
+            "BAITHUL AYN": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`)
+        };
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const affiliationNo = user.email.split('@')[0].trim();
+                db.collection("colleges").doc(affiliationNo).get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('collegeTitle').innerText = `${data.affiliationNo} - ${data.collegeName}`;
+                        let stream = data.stream ? data.stream.trim().toUpperCase() : "SHE";
+                        if (!streamSemesters[stream]) stream = "SHE";
+
+                        document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
+
+                        const classSelect = document.getElementById('classSelect');
+                        classSelect.innerHTML = '<option value="">സെമസ്റ്റർ തിരഞ്ഞെടുക്കുക</option>';
+                        streamSemesters[stream].forEach(sem => {
+                            const opt = document.createElement('option');
+                            opt.value = sem;
+                            opt.textContent = sem;
+                            classSelect.appendChild(opt);
+                        });
+                    } else {
+                        document.getElementById('collegeTitle').innerText = `കോളേജ് ഡാറ്റ ലഭ്യമല്ല (ID: ${affiliationNo})`;
+                    }
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        document.getElementById('perfForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const sem = document.getElementById('classSelect').value;
+            const rOb = parseFloat(document.getElementById('relObtained').value);
+            const rTot = parseFloat(document.getElementById('relTotal').value);
+            const sOb = parseFloat(document.getElementById('secObtained').value);
+            const sTot = parseFloat(document.getElementById('secTotal').value);
+
+            const rPer = (rOb / rTot) * 100;
+            const sPer = (sOb / sTot) * 100;
+            const totalPer = ((rOb + sOb) / (rTot + sTot)) * 100;
+
+            const res = document.getElementById('resultOutput');
+            res.style.display = 'block';
+            res.innerHTML = `സെമസ്റ്റർ: ${sem} <br>മതപരം: ${rPer.toFixed(2)}% | ഭൗതികം: ${sPer.toFixed(2)}% <br>ആകെ സ്കോർ: ${totalPer.toFixed(2)}%`;
+
+            const user = auth.currentUser;
+            if (user) {
+                const affNo = user.email.split('@')[0];
+                db.collection("colleges").doc(affNo).collection("marks").add({
+                    semester: sem, rOb, rTot, sOb, sTot, totalPer,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert('വിജയകരമായി സേവ് ചെയ്യപ്പെട്ടു!');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
