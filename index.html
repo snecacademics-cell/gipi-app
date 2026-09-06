@@ -79,6 +79,7 @@
             font-size: 14px;
             margin-top: 15px;
             font-weight: 600;
+            display: none;
         }
     </style>
 </head>
@@ -95,7 +96,7 @@
                 <input type="password" id="password" required placeholder="******">
             </div>
             <button type="submit" class="login-btn">Login</button>
-            <div id="errorMsg" class="error-msg"></div>
+            <div id="errorMsg" class="error-msg">Invalid Affiliation Number or Password!</div>
         </form>
     </div>
 
@@ -114,21 +115,41 @@
             measurementId: "G-Z4G2JRGGDL"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const affNo = document.getElementById('affNo').value.trim();
-            const pass = document.getElementById('password').value.trim();
-            const email = `${affNo}@gipi.edu`;
+            const password = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.style.display = 'none';
 
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    window.location.href = 'dashboard.html';
-                })
-                .catch((error) => {
-                    document.getElementById('errorMsg').innerText = "Invalid Affiliation Number or Password!";
-                });
+            try {
+                // ഫയർസ്റ്റോറിലെ 'colleges' കളക്ഷനിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ പരിശോധിക്കുന്നു
+                const docRef = await db.collection("colleges").doc(affNo).get();
+                
+                if (docRef.exists) {
+                    const collegeData = docRef.data();
+                    
+                    // ഷീറ്റിൽ നൽകിയ പാസ്‌വേഡും യൂസർ നൽകിയ പാസ്‌വേഡും ഒത്തുനോക്കുന്നു
+                    if (collegeData.password === password) {
+                        // സെഷനിൽ ലോഗിൻ വിവരങ്ങൾ സേവ് ചെയ്യുന്നു
+                        localStorage.setItem("gipi_affNo", affNo);
+                        localStorage.setItem("gipi_collegeName", collegeData.collegeName);
+                        localStorage.setItem("gipi_stream", collegeData.stream);
+
+                        // ഡാഷ്‌ബോർഡിലേക്ക്redirect ചെയ്യുന്നു
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        errorMsg.style.display = 'block';
+                    }
+                } else {
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Login Error: ", error);
+                errorMsg.style.display = 'block';
+            }
         });
     </script>
 </body>
