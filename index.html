@@ -89,7 +89,7 @@
         <form id="loginForm">
             <div class="form-group">
                 <label>Affiliation Number:</label>
-                <input type="text" id="affNo" required placeholder="e.g. 18">
+                <input type="text" id="affNo" required placeholder="e.g. 2">
             </div>
             <div class="form-group">
                 <label>Password:</label>
@@ -125,25 +125,26 @@
             errorMsg.style.display = 'none';
 
             try {
-                // ഫയർസ്റ്റോറിലെ 'colleges' കളക്ഷനിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ പരിശോധിക്കുന്നു
+                // ഫയർസ്റ്റോറിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ പരിശോധിക്കുന്നു
                 const docRef = await db.collection("colleges").doc(affNo).get();
                 
                 if (docRef.exists) {
                     const collegeData = docRef.data();
+                    console.log("Found College:", collegeData);
                     
-                    // ഷീറ്റിൽ നൽകിയ പാസ്‌വേഡും യൂസർ നൽകിയ പാസ്‌വേഡും ഒത്തുനോക്കുന്നു
-                    if (collegeData.password === password) {
-                        // സെഷനിൽ ലോഗിൻ വിവരങ്ങൾ സേവ് ചെയ്യുന്നു
+                    // പാസ്‌വേഡ് ചെക്ക് ചെയ്യുന്നു (String ആയും Number ആയും ഒത്തുനോക്കാൻ == ഉപയോഗിക്കുന്നു)
+                    if (String(collegeData.password).trim() === String(password).trim()) {
                         localStorage.setItem("gipi_affNo", affNo);
                         localStorage.setItem("gipi_collegeName", collegeData.collegeName);
                         localStorage.setItem("gipi_stream", collegeData.stream);
 
-                        // ഡാഷ്‌ബോർഡിലേക്ക്redirect ചെയ്യുന്നു
                         window.location.href = 'dashboard.html';
                     } else {
+                        console.log("Password mismatch");
                         errorMsg.style.display = 'block';
                     }
                 } else {
+                    console.log("College document not found");
                     errorMsg.style.display = 'block';
                 }
             } catch (error) {
