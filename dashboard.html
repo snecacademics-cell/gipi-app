@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIPI - സ്ഥാപന പ്രകടന വിലയിരുത്തൽ ഡാഷ്‌ബോർഡ്</title>
+    <title>GIPI - സ്ഥാപന ഡാഷ്‌ബോർഡ്</title>
     <!-- Font Awesome 6.4.0 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -22,7 +22,7 @@
         .dashboard-container {
             background: #ffffff;
             padding: 40px;
-            border-radius: 15px; /* Standard Section Cards */
+            border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             width: 100%;
             max-width: 850px;
@@ -38,14 +38,14 @@
             box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
         }
         .stream-badge {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.25);
             color: #ffffff;
-            padding: 6px 18px;
-            border-radius: 50px; /* Pure Pill Shape */
-            font-size: 14px;
-            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: bold;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .form-row {
             display: flex;
@@ -66,7 +66,7 @@
             width: 100%;
             height: 48px;
             padding: 0 15px;
-            border-radius: 30px; /* Rounded Capsule */
+            border-radius: 30px;
             border: 1px solid #cbd5e1;
             font-size: 15px;
             box-sizing: border-box;
@@ -85,7 +85,7 @@
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             border: none;
-            border-radius: 50px; /* Pure Pill Shape */
+            border-radius: 50px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -101,7 +101,6 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(42, 82, 152, 0.4);
         }
-        /* Custom Native Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -120,16 +119,8 @@
             max-width: 420px;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            animation: modalPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes modalPop {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .modal-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
-        }
+        .modal-icon { font-size: 50px; margin-bottom: 20px; }
         .modal-icon.success { color: #05c46b; }
         .modal-icon.error { color: #fc5c65; }
         .modal-btn {
@@ -142,23 +133,19 @@
             font-size: 15px;
             cursor: pointer;
             margin-top: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .modal-btn:hover {
-            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="header-box">
-            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 24px;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
+            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
             <div id="streamBadge" class="stream-badge"><i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
         </div>
         
         <form id="perfForm">
-            <div class="form-group" style="max-width: 100%;">
-                <label for="classSelect"><i class="fa-solid fa-chalkboard-user" style="margin-right: 8px; color: #2a5298;"></i>ക്ലാസ് / സെമസ്റ്റർ തിരഞ്ഞെടുക്കുക:</label>
+            <div class="form-group">
+                <label for="classSelect"><i class="fa-solid fa-chalkboard-user" style="margin-right: 8px; color: #2a5298;"></i>സെമസ്റ്റർ / ക്ലാസ് തിരഞ്ഞെടുക്കുക:</label>
                 <select id="classSelect" required>
                     <option value="">ആദ്യം സ്ട്രീം ലോഡ് ചെയ്യപ്പെടുന്നു...</option>
                 </select>
@@ -190,7 +177,7 @@
         <div id="resultOutput" style="margin-top: 25px; font-weight: bold; text-align: center; font-size: 16px; color: #1e3c72; background: #eef2f7; padding: 15px; border-radius: 15px; display: none;"></div>
     </div>
 
-    <!-- Custom Modal Structure (Zero-Native Dialog Rule) -->
+    <!-- Custom Modal Structure -->
     <div id="customModal" class="modal-overlay">
         <div class="modal-card">
             <div id="modalIconContainer" class="modal-icon success"><i id="modalIcon" class="fa-solid fa-circle-check"></i></div>
@@ -200,7 +187,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
