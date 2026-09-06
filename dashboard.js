@@ -20,7 +20,7 @@ const streamClasses = {
     "BAITHUL AYN": ["BS1", "BS2", "BS3", "BU1", "BU2", "BB1", "BB2", "BB3", "PG1", "PG2"]
 };
 
-// Custom Modal Handler (Zero-Native Dialog Rule)
+// Custom Modal Handler
 function showCustomModal(title, message, isSuccess = true) {
     const modal = document.getElementById('customModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -38,7 +38,6 @@ function showCustomModal(title, message, isSuccess = true) {
         modalIconContainer.className = "modal-icon error";
         modalIcon.className = "fa-solid fa-circle-exclamation";
     }
-    
     modal.style.display = 'flex';
 }
 
@@ -46,7 +45,7 @@ function closeModal() {
     document.getElementById('customModal').style.display = 'none';
 }
 
-// Advanced Keyboard Navigation: Enter key acts as Tab key
+// Enter Key Navigation
 document.addEventListener('DOMContentLoaded', () => {
     const formFields = document.querySelectorAll('#perfForm input, #perfForm select');
     formFields.forEach((field, index) => {
@@ -64,10 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ലോഗിൻ സ്റ്റേറ്റ് പരിശോധിച്ചു കോളേജ് ഡാറ്റ എടുക്കൽ
 auth.onAuthStateChanged((user) => {
     if (user) {
-        const affiliationNo = user.email.split('@')[0];
+        // യൂസർ ഇമെയിലിൽ നിന്ന് അഫിലിയേഷൻ നമ്പർ കൃത്യമായി എടുക്കുന്നു
+        const emailParts = user.email.split('@');
+        const affiliationNo = emailParts[0].trim();
         
+        console.log("Logged in Affiliation No:", affiliationNo);
+
         db.collection("colleges").doc(affiliationNo).get().then((doc) => {
             if (doc.exists) {
                 const collegeData = doc.data();
@@ -78,7 +82,7 @@ auth.onAuthStateChanged((user) => {
                     stream = "SHE";
                 }
 
-                document.getElementById('streamBadge.innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
+                document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
 
                 const classSelect = document.getElementById('classSelect');
                 classSelect.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
@@ -91,10 +95,12 @@ auth.onAuthStateChanged((user) => {
                 });
 
             } else {
-                document.getElementById('collegeTitle').innerText = "കോളേജ് വിവരങ്ങൾ ലഭ്യലല്ല";
+                document.getElementById('collegeTitle').innerText = `അഫിലിയേഷൻ നം ${affiliationNo} - കോളേജ് ഡാറ്റ ഫയർബേസിൽ കണ്ടെത്തിയില്ല`;
+                document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> സ്ട്രീം ലഭ്യമല്ല`;
             }
         }).catch((error) => {
             console.error("Error getting college data:", error);
+            document.getElementById('collegeTitle').innerText = "ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പിശക് സംഭവിച്ചു";
         });
     } else {
         window.location.href = 'index.html';
