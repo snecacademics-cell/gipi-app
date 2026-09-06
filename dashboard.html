@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIPI - സ്ഥാപന ഡാഷ്‌ബോർഡ്</title>
+    <title>GIPI - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -115,20 +115,20 @@
     <div class="dashboard-container">
         <!-- Top Bar with Logout Button -->
         <div class="top-bar">
-            <span style="font-size: 15px; font-weight: 600;"><i class="fa-solid fa-user-shield"></i> സ്ഥാപന പോർട്ടൽ</span>
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> ലോഗ് ഔട്ട്</button>
+            <span style="font-size: 15px; font-weight: 600;"><i class="fa-solid fa-user-shield"></i> Institution Portal</span>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
 
         <div class="header-box">
-            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
-            <div id="streamBadge" class="stream-badge"><i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
+            <h2 id="collegeTitle" style="margin: 0 0 10px 0; font-size: 26px; font-weight: 700;">Loading College Name...</h2>
+            <div id="streamBadge" class="stream-badge"><i class="fa-solid fa-graduation-cap"></i> Stream: Loading...</div>
         </div>
         
         <form id="perfForm">
             <div class="form-group">
-                <label>സെമസ്റ്റർ / ക്ലാസ് തിരഞ്ഞെടുക്കുക:</label>
+                <label>Select Semester / Class:</label>
                 <select id="classSelect" required>
-                    <option value="">ആദ്യം സ്ട്രീം ലോഡ് ചെയ്യപ്പെടുന്നു...</option>
+                    <option value="">Loading stream semesters...</option>
                 </select>
             </div>
 
@@ -136,23 +136,23 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <h4 style="color: #1e3c72; margin-bottom: 15px;">മതപരം (Religious)</h4>
-                    <label>നേടിയ ആകെ മാർക്ക്:</label>
-                    <input type="number" id="relObtained" required placeholder="ഉദാ: 450">
-                    <label style="margin-top: 12px;">പരമാവധി ആകെ മാർക്ക്:</label>
-                    <input type="number" id="relTotal" required placeholder="ഉദാ: 500">
+                    <h4 style="color: #1e3c72; margin-bottom: 15px;">Religious Subjects</h4>
+                    <label>Marks Obtained:</label>
+                    <input type="number" id="relObtained" required placeholder="e.g. 450">
+                    <label style="margin-top: 12px;">Total Max Marks:</label>
+                    <input type="number" id="relTotal" required placeholder="e.g. 500">
                 </div>
                 
                 <div class="form-group">
-                    <h4 style="color: #1e3c72; margin-bottom: 15px;">ഭൗതികം (Secular)</h4>
-                    <label>നേടിയ ആകെ മാർക്ക്:</label>
-                    <input type="number" id="secObtained" required placeholder="ഉദാ: 420">
-                    <label style="margin-top: 12px;">പരമാവധി ആകെ മാർക്ക്:</label>
-                    <input type="number" id="secTotal" required placeholder="ഉദാ: 500">
+                    <h4 style="color: #1e3c72; margin-bottom: 15px;">Secular Subjects</h4>
+                    <label>Marks Obtained:</label>
+                    <input type="number" id="secObtained" required placeholder="e.g. 420">
+                    <label style="margin-top: 12px;">Total Max Marks:</label>
+                    <input type="number" id="secTotal" required placeholder="e.g. 500">
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn"><i class="fa-solid fa-calculator"></i> പെർസെന്റേജ് കണക്കാക്കുക</button>
+            <button type="submit" class="submit-btn"><i class="fa-solid fa-calculator"></i> Calculate Percentage</button>
         </form>
 
         <div id="resultOutput" style="margin-top: 25px; font-weight: bold; text-align: center; font-size: 16px; color: #1e3c72; background: #eef2f7; padding: 15px; border-radius: 15px; display: none;"></div>
@@ -194,10 +194,10 @@
                         let stream = data.stream ? data.stream.trim().toUpperCase() : "SHE";
                         if (!streamSemesters[stream]) stream = "SHE";
 
-                        document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
+                        document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> Stream: ${stream}`;
 
                         const classSelect = document.getElementById('classSelect');
-                        classSelect.innerHTML = '<option value="">സെമസ്റ്റർ തിരഞ്ഞെടുക്കുക</option>';
+                        classSelect.innerHTML = '<option value="">Select Semester</option>';
                         streamSemesters[stream].forEach(sem => {
                             const opt = document.createElement('option');
                             opt.value = sem;
@@ -205,7 +205,7 @@
                             classSelect.appendChild(opt);
                         });
                     } else {
-                        document.getElementById('collegeTitle').innerText = `കോളേജ് ഡാറ്റ ലഭ്യമല്ല (ID: ${affiliationNo})`;
+                        document.getElementById('collegeTitle').innerText = `College Data Not Found (ID: ${affiliationNo})`;
                     }
                 });
             } else {
@@ -233,7 +233,7 @@
 
             const res = document.getElementById('resultOutput');
             res.style.display = 'block';
-            res.innerHTML = `സെമസ്റ്റർ: ${sem} <br>മതപരം: ${rPer.toFixed(2)}% | ഭൗതികം: ${sPer.toFixed(2)}% <br>ആകെ സ്കോർ: ${totalPer.toFixed(2)}%`;
+            res.innerHTML = `Semester: ${sem} <br>Religious: ${rPer.toFixed(2)}% | Secular: ${sPer.toFixed(2)}% <br>Overall GIPI Score: ${totalPer.toFixed(2)}%`;
 
             const user = auth.currentUser;
             if (user) {
@@ -242,7 +242,7 @@
                     semester: sem, rOb, rTot, sOb, sTot, totalPer,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
-                    alert('വിജയകരമായി സേവ് ചെയ്യപ്പെട്ടു!');
+                    alert('Marks saved successfully!');
                 });
             }
         });
