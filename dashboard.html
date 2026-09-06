@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIPI - ഡാഷ്‌ബോർഡ്</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>സ്ഥാപന പ്രകടന വിലയിരുത്തൽ</h2>
+        <form id="perfForm">
+            <h3>മതപരം (Religious)</h3>
+            <label>നേടിയ ആകെ മാർക്ക്:</label>
+            <input type="number" id="relObtained" required>
+            <label>പരമാവധി ആകെ മാർക്ക്:</label>
+            <input type="number" id="relTotal" required>
+
+            <h3>ഭൗതികം (Secular)</h3>
+            <label>നേടിയ ആകെ മാർക്ക്:</label>
+            <input type="number" id="secObtained" required>
+            <label>പരമാവധി ആകെ മാർക്ക്:</label>
+            <input type="number" id="secTotal" required>
+
+            <button type="submit">പെർസെന്റേജ് കണക്കാക്കുക</button>
+        </form>
+        <div id="resultOutput" style="margin-top: 20px; font-weight: bold; text-align: center;"></div>
+    </div>
+
+    <script>
+        document.getElementById('perfForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const relObtained = parseFloat(document.getElementById('relObtained').value);
+            const relTotal = parseFloat(document.getElementById('relTotal').value);
+            const secObtained = parseFloat(document.getElementById('secObtained').value);
+            const secTotal = parseFloat(document.getElementById('secTotal').value);
+
+            const relPercentage = (relObtained / relTotal) * 100;
+            const secPercentage = (secObtained / secTotal) * 100;
+
+            document.getElementById('resultOutput').innerHTML = `
+                മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% <br>
+                ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}%
+            `;
+        });
+    </script>
+</body>
+</html>
