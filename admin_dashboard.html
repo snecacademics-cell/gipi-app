@@ -123,8 +123,8 @@
             statusMsg.style.color = "#2b6cb0";
             statusMsg.innerText = "Syncing data, please wait...";
 
-            // നിങ്ങളുടെ ഗൂഗിൾ ഷീറ്റിന്റെ പബ്ലിഷ് ചെയ്ത CSV ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
-            const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvwYqwmemerrYrGbhShFq4MY2pCc-f7W0UPA6YjR9u5KnsxNpSguaG_l_fR7iYvHJkhz_3qafOICrs/pub?gid=1188030135&single=true&output=csv";
+            // പുതിയ CSV ലിങ്ക് ഇവിടെ നൽകുക (നിങ്ങളുടെ പുതിയ ഗൂഗിൾ ഷീറ്റ് CSV ലിങ്ക് ഇവിടെ ഒട്ടിക്കുക)
+            const csvUrl = "YOUR_NEW_CSV_URL_HERE";
 
             try {
                 const response = await fetch(csvUrl);
@@ -136,10 +136,12 @@
                     if (!rows[i].trim()) continue;
                     const cols = rows[i].split(',');
                     
+                    // ഷീറ്റിലെ കോള ക്രമം അനുസരിച്ച് കൃത്യമായി എടുത്തു നൽകുന്നു:
+                    // ഉദാഹരണത്തിന്: cols[0] = Affiliation No, cols[1] = College Name, cols[2] = Stream, cols[3] = Password
                     const affNo = cols[0] ? cols[0].trim() : '';
                     const collegeName = cols[1] ? cols[1].trim() : '';
                     const stream = cols[2] ? cols[2].trim() : '';
-                    const password = cols[cols.length - 2] ? cols[cols.length - 2].trim() : '';
+                    const password = cols[3] ? cols[3].trim() : ''; // പാസ്‌വേഡ് ഉള്ള കൃത്യമായ കോളം നമ്പർ ഇവിടെ കൊടുക്കാം
 
                     if (affNo) {
                         await db.collection("colleges").doc(affNo).set({
