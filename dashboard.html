@@ -3,31 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GIPI - ഡാഷ്‌ബോർഡ്</title>
+    <title>GIPI - സ്ഥാപന ഡാഷ്‌ബോർഡ്</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* കമ്പ്യൂട്ടറിൽ വിശാലമായി കാണാൻ വേണ്ടി */
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .dashboard-container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 700px; /* വിശാലമായ രൂപം */
+            box-sizing: border-box;
+        }
+        .stream-badge {
+            background-color: #e2e8f0;
+            color: #2d3748;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-group {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container" style="width: 500px;">
-        <!-- കോളേജിന്റെ പേര് ഇവിടെ ഓട്ടോമാറ്റിക്കായി വരും -->
-        <h2 id="collegeTitle" style="color: #007bff; text-align: center;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
-        <h3 style="text-align: center; font-size: 16px; color: #555;">സ്ഥാപന പ്രകടന വിലയിരുത്തൽ</h3>
+    <div class="dashboard-container">
+        <div style="text-align: center;">
+            <h2 id="collegeTitle" style="color: #007bff; margin-bottom: 5px;">കോളേജ് പേര് ലോഡ് ചെയ്യുന്നു...</h2>
+            <div id="streamBadge" class="stream-badge">സ്ട്രീം: ലോഡ് ചെയ്യുന്നു...</div>
+            <h3 style="color: #555; margin-top: 0;">സ്ഥാപന പ്രകടന വിലയിരുത്തൽ</h3>
+        </div>
         
         <form id="perfForm">
-            <h3>മതപരം (Religious)</h3>
-            <label>നേടിയ ആകെ മാർക്ക്:</label>
-            <input type="number" id="relObtained" required>
-            <label>പരമാവധി ആകെ മാർക്ക്:</label>
-            <input type="number" id="relTotal" required>
+            <div class="form-group">
+                <label for="classSelect"><strong>ക്ലാസ് / സെമസ്റ്റർ തിരഞ്ഞെടുക്കുക:</strong></label>
+                <select id="classSelect" required style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc; font-size: 15px;">
+                    <option value="">ആദ്യം സ്ട്രീം ലോഡ് ചെയ്യപ്പെടുന്നു...</option>
+                </select>
+            </div>
 
-            <h3>ഭൗതികം (Secular)</h3>
-            <label>നേടിയ ആകെ മാർക്ക്:</label>
-            <input type="number" id="secObtained" required>
-            <label>പരമാവധി ആകെ മാർക്ക്:</label>
-            <input type="number" id="secTotal" required>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
 
-            <button type="submit">പെർസെന്റേജ് കണക്കാക്കുക</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <h4 style="color: #333; margin-bottom: 10px;">മതപരം (Religious)</h4>
+                    <label>നേടിയ ആകെ മാർക്ക്:</label>
+                    <input type="number" id="relObtained" required placeholder="ഉദാ: 450">
+                    <label>പരമാവധി ആകെ മാർക്ക്:</label>
+                    <input type="number" id="relTotal" required placeholder="ഉദാ: 500">
+                </div>
+                
+                <div class="form-group">
+                    <h4 style="color: #333; margin-bottom: 10px;">ഭൗതികം (Secular)</h4>
+                    <label>നേടിയ ആകെ മാർക്ക്:</label>
+                    <input type="number" id="secObtained" required placeholder="ഉദാ: 420">
+                    <label>പരമാവധി ആകെ മാർക്ക്:</label>
+                    <input type="number" id="secTotal" required placeholder="ഉദാ: 500">
+                </div>
+            </div>
+
+            <button type="submit" style="margin-top: 10px; padding: 12px; font-size: 16px;">പെർസെന്റേജ് കണക്കാക്കുക</button>
         </form>
-        <div id="resultOutput" style="margin-top: 20px; font-weight: bold; text-align: center;"></div>
+
+        <div id="resultOutput" style="margin-top: 25px; font-weight: bold; text-align: center; font-size: 16px; color: #2b6cb0;"></div>
     </div>
 
     <!-- Firebase SDKs -->
