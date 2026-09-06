@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIPI - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e3c72;
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 25px;
+        }
+        .logout-btn {
+            background: #fc5c65;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        h2 { color: #1e3c72; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <span><i class="fa-solid fa-user-gear"></i> Admin Control Panel</span>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+
+        <h2>Welcome, Admin!</h2>
+        <p>Here you can manage and view all institutional performances and data.</p>
+        
+        <!-- അഡ്മിന് കാണാനുള്ള മറ്റ് ടേബിളോ ഡാറ്റയോ ഇവിടെ ചേർക്കാം -->
+    </div>
+
+    <script>
+        const role = localStorage.getItem("gipi_role");
+        if (role !== "admin") {
+            window.location.replace('index.html');
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.replace('index.html');
+        }
+    </script>
+</body>
+</html>
