@@ -124,20 +124,25 @@
             const errorMsg = document.getElementById('errorMsg');
             errorMsg.style.display = 'none';
 
+            // അഡ്മിൻ ലോഗിൻ ചെക്ക് ചെയ്യുക
+            if (affNo.toLowerCase() === 'admin' && password === 'admin123') {
+                localStorage.setItem("gipi_role", "admin");
+                window.location.replace('admin_dashboard.html');
+                return;
+            }
+
             try {
                 const docRef = await db.collection("colleges").doc(affNo).get();
                 
                 if (docRef.exists) {
                     const collegeData = docRef.data();
                     
-                    // പാസ്‌വേഡ് കൃത്യമായി ഒത്തുനോക്കുന്നു
                     if (String(collegeData.password).trim() === String(password).trim()) {
-                        // ബ്രൗസർ ലോക്കൽ സ്റ്റോറേജിൽ സെഷൻ സേവ് ചെയ്യുന്നു
+                        localStorage.setItem("gipi_role", "college");
                         localStorage.setItem("gipi_affNo", affNo);
                         localStorage.setItem("gipi_collegeName", collegeData.collegeName);
                         localStorage.setItem("gipi_stream", collegeData.stream);
 
-                        // ഡാഷ്‌ബോർഡിലേക്ക് മാറ്റി വിടുന്നു
                         window.location.replace('dashboard.html');
                     } else {
                         errorMsg.style.display = 'block';
