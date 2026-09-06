@@ -118,8 +118,7 @@
         const db = firebase.firestore();
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); // പേജ് ഓട്ടോമാറ്റിക്കായി റീലോഡ് ആകുന്നത് തടയുന്നു
-            
+            e.preventDefault();
             const affNo = document.getElementById('affNo').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMsg');
@@ -133,7 +132,7 @@
                     
                     // പാസ്‌വേഡ് കൃത്യമായി ഒത്തുനോക്കുന്നു
                     if (String(collegeData.password).trim() === String(password).trim()) {
-                        // ലോക്കൽ സ്റ്റോറേജിൽ സെഷൻ സേവ് ചെയ്യുന്നു
+                        // ബ്രൗസർ ലോക്കൽ സ്റ്റോറേജിൽ സെഷൻ സേവ് ചെയ്യുന്നു
                         localStorage.setItem("gipi_affNo", affNo);
                         localStorage.setItem("gipi_collegeName", collegeData.collegeName);
                         localStorage.setItem("gipi_stream", collegeData.stream);
