@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIPI - സ്ഥാപന ലോഗിൻ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>ഗ്ലോബൽ ഇൻസ്റ്റിറ്റ്യൂഷണൽ പെർഫോമൻസ് ഇൻഡക്സ് (GIPI)</h2>
+        <form id="loginForm">
+            <label for="affiliationNo">അഫിലിയേഷൻ നമ്പർ:</label>
+            <input type="text" id="affiliationNo" required placeholder="ഉദാ: 1001">
+
+            <label for="password">പാസ്‌വേർഡ്:</label>
+            <input type="password" id="password" required placeholder="പാസ്‌വേർഡ് നൽകുക">
+
+            <button type="submit">ലോഗിൻ ചെയ്യുക</button>
+        </form>
+        <p id="errorMsg" class="error"></p>
+    </div>
+
+    <!-- Firebase SDK Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
