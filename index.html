@@ -118,37 +118,36 @@
         const db = firebase.firestore();
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // പേജ് ഓട്ടോമാറ്റിക്കായി റീലോഡ് ആകുന്നത് തടയുന്നു
+            
             const affNo = document.getElementById('affNo').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMsg');
             errorMsg.style.display = 'none';
 
             try {
-                console.log("Checking affiliation number:", affNo);
                 const docRef = await db.collection("colleges").doc(affNo).get();
                 
                 if (docRef.exists) {
                     const collegeData = docRef.data();
-                    console.log("College Data Found:", collegeData);
-                    console.log("Input Password:", password, "DB Password:", collegeData.password);
                     
+                    // പാസ്‌വേഡ് കൃത്യമായി ഒത്തുനോക്കുന്നു
                     if (String(collegeData.password).trim() === String(password).trim()) {
+                        // ലോക്കൽ സ്റ്റോറേജിൽ സെഷൻ സേവ് ചെയ്യുന്നു
                         localStorage.setItem("gipi_affNo", affNo);
                         localStorage.setItem("gipi_collegeName", collegeData.collegeName);
                         localStorage.setItem("gipi_stream", collegeData.stream);
 
-                        window.location.href = 'dashboard.html';
+                        // ഡാഷ്‌ബോർഡിലേക്ക് മാറ്റി വിടുന്നു
+                        window.location.replace('dashboard.html');
                     } else {
-                        console.warn("Password mismatch!");
                         errorMsg.style.display = 'block';
                     }
                 } else {
-                    console.warn("College document not found in Firestore for ID:", affNo);
                     errorMsg.style.display = 'block';
                 }
             } catch (error) {
-                console.error("Firestore Error:", error);
+                console.error("Login Error:", error);
                 errorMsg.style.display = 'block';
             }
         });
