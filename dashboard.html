@@ -113,7 +113,6 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Top Bar with Logout Button -->
         <div class="top-bar">
             <span style="font-size: 15px; font-weight: 600;"><i class="fa-solid fa-user-shield"></i> Institution Portal</span>
             <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -160,7 +159,6 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig = {
@@ -173,7 +171,6 @@
             measurementId: "G-Z4G2JRGGDL"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
 
         const streamSemesters = {
@@ -184,39 +181,33 @@
             "BAITHUL AYN": Array.from({length: 20}, (_, i) => `Sem ${i + 1}`)
         };
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                const affiliationNo = user.email.split('@')[0].trim();
-                db.collection("colleges").doc(affiliationNo).get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        document.getElementById('collegeTitle').innerText = `${data.affiliationNo} - ${data.collegeName}`;
-                        let stream = data.stream ? data.stream.trim().toUpperCase() : "SHE";
-                        if (!streamSemesters[stream]) stream = "SHE";
+        // ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് ലോഗിൻ ചെയ്ത കോളേജ് വിവരങ്ങൾ എടുക്കുന്നു
+        const affNo = localStorage.getItem("gipi_affNo");
+        const collegeName = localStorage.getItem("gipi_collegeName");
+        const stream = localStorage.getItem("gipi_stream");
 
-                        document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> Stream: ${stream}`;
+        if (!affNo) {
+            window.location.replace('index.html');
+        } else {
+            document.getElementById('collegeTitle').innerText = `${affNo} - ${collegeName}`;
+            let cleanStream = stream ? stream.trim().toUpperCase() : "SHE";
+            if (!streamSemesters[cleanStream]) cleanStream = "SHE";
 
-                        const classSelect = document.getElementById('classSelect');
-                        classSelect.innerHTML = '<option value="">Select Semester</option>';
-                        streamSemesters[stream].forEach(sem => {
-                            const opt = document.createElement('option');
-                            opt.value = sem;
-                            opt.textContent = sem;
-                            classSelect.appendChild(opt);
-                        });
-                    } else {
-                        document.getElementById('collegeTitle').innerText = `College Data Not Found (ID: ${affiliationNo})`;
-                    }
-                });
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
+            document.getElementById('streamBadge').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> Stream: ${cleanStream}`;
+
+            const classSelect = document.getElementById('classSelect');
+            classSelect.innerHTML = '<option value="">Select Semester</option>';
+            streamSemesters[cleanStream].forEach(sem => {
+                const opt = document.createElement('option');
+                opt.value = sem;
+                opt.textContent = sem;
+                classSelect.appendChild(opt);
+            });
+        }
 
         function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'index.html';
-            });
+            localStorage.clear();
+            window.location.replace('index.html');
         }
 
         document.getElementById('perfForm').addEventListener('submit', function(e) {
@@ -235,9 +226,7 @@
             res.style.display = 'block';
             res.innerHTML = `Semester: ${sem} <br>Religious: ${rPer.toFixed(2)}% | Secular: ${sPer.toFixed(2)}% <br>Overall GIPI Score: ${totalPer.toFixed(2)}%`;
 
-            const user = auth.currentUser;
-            if (user) {
-                const affNo = user.email.split('@')[0];
+            if (affNo) {
                 db.collection("colleges").doc(affNo).collection("marks").add({
                     semester: sem, rOb, rTot, sOb, sTot, totalPer,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
