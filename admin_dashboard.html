@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             background: #fff;
             padding: 30px;
@@ -39,7 +39,38 @@
             cursor: pointer;
             font-weight: bold;
         }
+        .logout-btn:hover {
+            background: #e04852;
+        }
         h2 { color: #1e3c72; }
+        .action-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .sync-btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+            transition: all 0.3s ease;
+        }
+        .sync-btn:hover {
+            transform: translateY(-2px);
+        }
+        #statusMsg {
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
@@ -50,12 +81,32 @@
         </div>
 
         <h2>Welcome, Admin!</h2>
-        <p>Here you can manage and view all institutional performances and data.</p>
+        <p>Manage institutional data and sync directly from Google Sheets CSV source.</p>
         
-        <!-- അഡ്മിന് കാണാനുള്ള മറ്റ് ടേബിളോ ഡാറ്റയോ ഇവിടെ ചേർക്കാം -->
+        <div class="action-card">
+            <h3 style="color: #1e3c72; margin-top: 0;"><i class="fa-solid fa-database"></i> Database Synchronization</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Click the button below to fetch all colleges, affiliation numbers, streams, and passwords from the Google Sheet and update Firestore instantly.</p>
+            <button class="sync-btn" onclick="syncDataFromSheet()"><i class="fa-solid fa-rotate"></i> Sync Data from Google Sheet</button>
+            <div id="statusMsg"></div>
+        </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoCSN0BznAiThsvUETim_cYDvOes4S2vI",
+            authDomain: "gipi-app.firebaseapp.com",
+            projectId: "gipi-app",
+            storageBucket: "gipi-app.firebasestorage.app",
+            messagingSenderId: "922633997761",
+            appId: "1:922633997761:web:24abef2b23c2506cce3340",
+            measurementId: "G-Z4G2JRGGDL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const role = localStorage.getItem("gipi_role");
         if (role !== "admin") {
             window.location.replace('index.html');
@@ -64,6 +115,50 @@
         function logout() {
             localStorage.clear();
             window.location.replace('index.html');
+        }
+
+        // ഗൂഗിൾ ഷീറ്റിൽ നിന്നുള്ള CSV ലിങ്ക് ഉപയോഗിച്ച് ഡാറ്റ സിങ്ക് ചെയ്യുന്ന ഫങ്ഷൻ
+        async function syncDataFromSheet() {
+            const statusMsg = document.getElementById('statusMsg');
+            statusMsg.style.color = "#2b6cb0";
+            statusMsg.innerText = "Syncing data, please wait...";
+
+            // നിങ്ങളുടെ ഗൂഗിൾ ഷീറ്റിന്റെ പബ്ലിഷ് ചെയ്ത CSV ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
+            const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvwYqwmemerrYrGbhShFq4MY2pCc-f7W0UPA6YjR9u5KnsxNpSguaG_l_fR7iYvHJkhz_3qafOICrs/pub?gid=1188030135&single=true&output=csv";
+
+            try {
+                const response = await fetch(csvUrl);
+                const csvText = await response.text();
+                const rows = csvText.split('\n');
+                
+                let count = 0;
+                for (let i = 1; i < rows.length; i++) {
+                    if (!rows[i].trim()) continue;
+                    const cols = rows[i].split(',');
+                    
+                    const affNo = cols[0] ? cols[0].trim() : '';
+                    const collegeName = cols[1] ? cols[1].trim() : '';
+                    const stream = cols[2] ? cols[2].trim() : '';
+                    const password = cols[cols.length - 2] ? cols[cols.length - 2].trim() : '';
+
+                    if (affNo) {
+                        await db.collection("colleges").doc(affNo).set({
+                            affiliationNo: affNo,
+                            collegeName: collegeName,
+                            stream: stream,
+                            password: password
+                        });
+                        count++;
+                    }
+                }
+
+                statusMsg.style.color = "#05c46b";
+                statusMsg.innerText = `Successfully synced ${count} institutions from Google Sheet!`;
+            } catch (error) {
+                console.error("Sync Error:", error);
+                statusMsg.style.color = "#fc5c65";
+                statusMsg.innerText = "Failed to sync data. Check console for details.";
+            }
         }
     </script>
 </body>
