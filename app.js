@@ -1,4 +1,4 @@
-// ഫയർബേസ് കോൺഫിഗറേഷൻ (നിങ്ങളുടെ ഒറിജിനൽ വിവരങ്ങൾ ചേർത്തിരിക്കുന്നു)
+// ഫയർബേസ് കോൺഫിഗറേഷൻ
 const firebaseConfig = {
     apiKey: "AIzaSyAoCSN0BznAiThsvUETim_cYDvOes4S2vI",
     authDomain: "gipi-app.firebaseapp.com",
@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ലോഗിൻ ഫോം ഹാൻഡ്ലർ
+// 1. ലോഗിൻ ലോജിക്
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -22,8 +22,6 @@ if (loginForm) {
         
         const affiliationNo = document.getElementById('affiliationNo').value;
         const password = document.getElementById('password').value;
-
-        // അഫിലിയേഷൻ നമ്പർ ഇമെയിൽ രൂപത്തിലേക്ക് മാറ്റുന്നു
         const email = `${affiliationNo}@gipi.edu`;
 
         auth.signInWithEmailAndPassword(email, password)
@@ -33,6 +31,28 @@ if (loginForm) {
             })
             .catch((error) => {
                 document.getElementById('errorMsg').innerText = 'തെറ്റായ അഫിലിയേഷൻ നമ്പറോ പാസ്‌വേഡോ!';
+                console.error(error.message);
+            });
+    });
+}
+
+// 2. സൈൻ-അപ്പ് (രജിസ്ട്രേഷൻ) ലോജിക്
+const signupForm = document.getElementById('signupForm');
+if (signupForm) {
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const regAffiliationNo = document.getElementById('regAffiliationNo').value;
+        const regPassword = document.getElementById('regPassword').value;
+        const email = `${regAffiliationNo}@gipi.edu`;
+
+        auth.createUserWithEmailAndPassword(email, regPassword)
+            .then((userCredential) => {
+                alert('രജിസ്ട്രേഷൻ വിജയകരമാണ്! ഇപ്പോൾ ലോഗിൻ ചെയ്യാം.');
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                document.getElementById('signupError').innerText = 'രജിസ്ട്രേഷൻ പരാജയപ്പെട്ടു: ' + error.message;
                 console.error(error.message);
             });
     });
