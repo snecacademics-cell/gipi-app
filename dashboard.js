@@ -12,7 +12,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// സ്ട്രീമുകൾ അനുസരിച്ചുള്ള ക്ലാസുകൾ
 const streamClasses = {
     "SHE": ["H1", "H2", "D1", "D2", "D3"],
     "SHARIA": ["H1", "H2", "D1", "D2", "D3", "D4", "PG1", "PG2"],
@@ -20,6 +19,50 @@ const streamClasses = {
     "SHARIA PLUS": ["S1", "S2", "S3", "U1", "U2", "B1", "B2", "B3"],
     "BAITHUL AYN": ["BS1", "BS2", "BS3", "BU1", "BU2", "BB1", "BB2", "BB3", "PG1", "PG2"]
 };
+
+// Custom Modal Handler (Zero-Native Dialog Rule)
+function showCustomModal(title, message, isSuccess = true) {
+    const modal = document.getElementById('customModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+
+    modalTitle.innerText = title;
+    modalMessage.innerText = message;
+    
+    if (isSuccess) {
+        modalIconContainer.className = "modal-icon success";
+        modalIcon.className = "fa-solid fa-circle-check";
+    } else {
+        modalIconContainer.className = "modal-icon error";
+        modalIcon.className = "fa-solid fa-circle-exclamation";
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('customModal').style.display = 'none';
+}
+
+// Advanced Keyboard Navigation: Enter key acts as Tab key
+document.addEventListener('DOMContentLoaded', () => {
+    const formFields = document.querySelectorAll('#perfForm input, #perfForm select');
+    formFields.forEach((field, index) => {
+        field.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const nextField = formFields[index + 1];
+                if (nextField) {
+                    nextField.focus();
+                } else {
+                    document.querySelector('.submit-btn').click();
+                }
+            }
+        });
+    });
+});
 
 auth.onAuthStateChanged((user) => {
     if (user) {
@@ -30,21 +73,17 @@ auth.onAuthStateChanged((user) => {
                 const collegeData = doc.data();
                 document.getElementById('collegeTitle').innerText = `${collegeData.affiliationNo} - ${collegeData.collegeName}`;
                 
-                // ഷീറ്റിൽ നിന്നെടുത്ത സ്ട്രീം കൃത്യമായി ക്ലീൻ ചെയ്ത് എടുക്കുന്നു
                 let stream = collegeData.stream ? collegeData.stream.trim().toUpperCase() : "SHE";
-                
-                // ഒരുക്കിവെച്ച സ്ട്രീമുകളിൽ പെടാത്തതാണെങ്കിൽ ഡിഫോൾട്ടായി SHE വെക്കുന്നു
                 if (!streamClasses[stream]) {
                     stream = "SHE";
                 }
 
-                document.getElementById('streamBadge').innerText = `സ്ട്രീം: ${stream}`;
+                document.getElementById('streamBadge.innerHTML = `<i class="fa-solid fa-graduation-cap"></i> സ്ട്രീം: ${stream}`;
 
                 const classSelect = document.getElementById('classSelect');
                 classSelect.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
                 
-                const classes = streamClasses[stream];
-                classes.forEach(cls => {
+                streamClasses[stream].forEach(cls => {
                     const option = document.createElement('option');
                     option.value = cls;
                     option.textContent = cls;
@@ -75,7 +114,9 @@ document.getElementById('perfForm').addEventListener('submit', function(e) {
     const secPercentage = (secObtained / secTotal) * 100;
     const overallPercentage = ((relObtained + secObtained) / (relTotal + secTotal)) * 100;
 
-    document.getElementById('resultOutput').innerHTML = `
+    const resultDiv = document.getElementById('resultOutput');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
         തിരഞ്ഞെടുത്ത ക്ലാസ്: ${selectedClass} <br>
         മതപരം പെർസെന്റേജ്: ${relPercentage.toFixed(2)}% &nbsp;|&nbsp; ഭൗതികം പെർസെന്റേജ്: ${secPercentage.toFixed(2)}% <br>
         ആകെ GIPI സ്കോർ: ${overallPercentage.toFixed(2)}%
@@ -89,9 +130,10 @@ document.getElementById('perfForm').addEventListener('submit', function(e) {
             relObtained, relTotal, secObtained, secTotal, overallPercentage,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            alert('മാർക്കുകൾ വിജയകരമായി സേവ് ചെയ്യപ്പെട്ടു!');
+            showCustomModal("വിജയകരമാണ്", "മാർക്കുകൾ വിജയകരമായി ഡാറ്റാബേസിൽ സേവ് ചെയ്യപ്പെട്ടു!", true);
         }).catch((error) => {
             console.error("Error saving marks: ", error);
+            showCustomModal("പിശക് സംഭവിച്ചു", "മാർക്കുകൾ സേവ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.", false);
         });
     }
 });
