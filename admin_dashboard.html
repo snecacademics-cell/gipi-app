@@ -145,22 +145,27 @@
             window.location.replace('index.html');
         }
 
-        // അഡ്മിൻ പാനലിൽ കോളേജുകളുടെ ഡ്രോപ്ഡൗൺ കൃത്യമായി 1 മുതൽ ക്രമത്തിൽ ലോഡ് ചെയ്യാൻ
+        // അഡ്മിൻ പാനലിൽ കോളേജുകളുടെ ഡ്രോപ്ഡൗൺ കൃത്യമായി ലോഡ് ചെയ്യാൻ
         async function loadCollegesDropdown() {
             const collegeSelect = document.getElementById('collegeSelect');
             collegeSelect.innerHTML = '<option value="">Loading colleges...</option>';
             
             try {
                 const snapshot = await db.collection("colleges").get();
-                console.log("Total colleges found:", snapshot.size); // കൺസോളിൽ എത്ര കോളേജുണ്ടെന്ന് കാണാൻ
-                
                 let colleges = [];
+                
                 snapshot.forEach(doc => {
-                    colleges.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    const affNo = String(doc.id).trim();
+                    
+                    // അനാവശ്യമായ head, html അല്ലെങ്കിൽ unnamed എൻട്രികൾ ഒഴിവാക്കുന്നു
+                    if (affNo && !affNo.includes("<") && data.collegeName && !data.collegeName.toLowerCase().includes("unnamed")) {
+                        colleges.push({ id: affNo, ...data });
+                    }
                 });
 
                 // അഫിലിയേഷൻ നമ്പറുകളുടെ അടിസ്ഥാനത്തിൽ 1 മുതൽ ക്രമമായി സോർട്ട് ചെയ്യുന്നു
-                colleges.sort((a, b) => parseInt(a.affiliationNo || 0) - parseInt(b.affiliationNo || 0));
+                colleges.sort((a, b) => parseInt(a.affiliationNo || a.id || 0) - parseInt(b.affiliationNo || b.id || 0));
 
                 collegeSelect.innerHTML = '<option value="">Select College</option>';
                 
@@ -171,8 +176,12 @@
 
                 colleges.forEach(data => {
                     const opt = document.createElement('option');
-                    opt.value = data.affiliationNo;
-                    opt.textContent = `${data.affiliationNo} - ${data.collegeName || 'Unnamed College'}`;
+                    const affNo = data.affiliationNo || data.id;
+                    // കോമയും ഡബിൾ കോട്ടേഷനും ഒഴിവാക്കി പേര് മാത്രം വ്യക്തമായി ക്ലീൻ ചെയ്യുന്നു
+                    let cleanName = String(data.collegeName).replace(/["']/g, "").trim();
+                    
+                    opt.value = affNo;
+                    opt.textContent = `${affNo} - ${cleanName}`;
                     collegeSelect.appendChild(opt);
                 });
             } catch (err) {
@@ -180,6 +189,10 @@
                 collegeSelect.innerHTML = '<option value="">Error Loading Colleges</option>';
             }
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCollegesDropdown();
+        });
 
         // പേജ് ലോഡ് ആകുമ്പോൾ തന്നെ ഫങ്ഷൻ കോൾ ചെയ്യുന്നു
         window.addEventListener('DOMContentLoaded', () => {
