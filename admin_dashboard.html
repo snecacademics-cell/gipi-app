@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GIPI - Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS Library for Direct Excel File Reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -92,7 +94,7 @@
         </div>
 
         <h2>Welcome, Admin!</h2>
-        <p>Manage institutional data and upload master student records via CSV.</p>
+        <p>Manage institutional data and upload direct Excel student records.</p>
         
         <!-- കോളേജ് ഡാറ്റ സിങ്ക് ചെയ്യുന്ന കാർഡ് -->
         <div class="action-card">
@@ -102,15 +104,15 @@
             <div id="statusMsg" class="status-msg"></div>
         </div>
 
-        <!-- മുഴുവൻ കുട്ടികളുടെയും ഡാറ്റ മാസ്റ്റർ CSV വഴി ഒന്നിച്ച് അപ്‌ലോഡ് ചെയ്യുന്ന കാർഡ് -->
+        <!-- എക്സൽ ഫയൽ നേരിട്ട് അപ്‌ലോഡ് ചെയ്യുന്ന കാർഡ് -->
         <div class="action-card" style="margin-top: 25px;">
-            <h3 style="color: #1e3c72; margin-top: 0;"><i class="fa-solid fa-users"></i> Upload All Students Data (Master CSV)</h3>
-            <p style="color: #64748b; font-size: 14px;">CSV Format: <b>AFLI. NO, UID, CLASS, NAME OF THE STUDENT</b>. Upload one file to update all colleges instantly.</p>
+            <h3 style="color: #1e3c72; margin-top: 0;"><i class="fa-solid fa-file-excel"></i> Upload Students Excel File (.xlsx)</h3>
+            <p style="color: #64748b; font-size: 14px;">Excel Columns Order: <b>AFLI. NO, UID, CLASS, NAME OF THE STUDENT</b>.</p>
             
-            <label style="font-weight: bold; font-size: 13px; color: #334155;">Upload Master CSV File:</label>
-            <input type="file" id="masterCsvInput" accept=".csv">
+            <label style="font-weight: bold; font-size: 13px; color: #334155;">Select Excel File:</label>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
 
-            <button class="upload-btn" onclick="uploadMasterStudentsCSV()"><i class="fa-solid fa-upload"></i> Upload All Students Data</button>
+            <button class="upload-btn" onclick="uploadExcelStudents()"><i class="fa-solid fa-upload"></i> Upload Excel Students Data</button>
             <div id="studentStatusMsg" class="status-msg"></div>
         </div>
     </div>
@@ -141,7 +143,6 @@
             window.location.replace('index.html');
         }
 
-        // കോളേജ് ഡാറ്റ സിങ്ക് ഫങ്ഷൻ
         async function syncDataFromSheet() {
             const statusMsg = document.getElementById('statusMsg');
             statusMsg.style.color = "#2b6cb0";
@@ -184,13 +185,13 @@
             }
         }
 
-        // മാസ്റ്റർ CSV ഫയൽ വഴി എല്ലാ കോളേജുകളുടെയും കുട്ടികളുടെ ഡാറ്റ ഒന്നിച്ച് അപ്‌ലോഡ് ചെയ്യുന്ന ഫങ്ഷൻ
-        async function uploadMasterStudentsCSV() {
-            const fileInput = document.getElementById('masterCsvInput');
+        // നേരിട്ട് എക്സൽ ഫയൽ రీഡ് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യുന്ന ഫങ്ഷൻ
+        async function uploadExcelStudents() {
+            const fileInput = document.getElementById('excelFileInput');
             const statusMsg = document.getElementById('studentStatusMsg');
 
             if (fileInput.files.length === 0) {
-                alert("Please select the CSV file first!");
+                alert("Please select an Excel file first!");
                 return;
             }
 
@@ -198,23 +199,31 @@
             const reader = new FileReader();
 
             statusMsg.style.color = "#2b6cb0";
-            statusMsg.innerText = "Processing and uploading students data...";
+            statusMsg.innerText = "Reading Excel file and uploading...";
 
             reader.onload = async function(e) {
                 try {
-                    const text = e.target.result;
-                    const rows = text.split('\n');
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // ആദ്യത്തെ ഷീറ്റ് എടുക്കുന്നു
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // ഷീറ്റിലെ ഡാറ്റ ജാവാസ്ക്രിപ്റ്റ് അറേ (JSON) രൂപത്തിലേക്ക് മാറ്റുന്നു
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     let count = 0;
 
-                    for (let i = 1; i < rows.length; i++) {
-                        if (!rows[i].trim()) continue;
-                        const cols = rows[i].split(',');
-                        
-                        // എക്സൽ ഷീറ്റിലെ ക്രമം അനുസരിച്ച്:
-                        const affNo = cols[0] ? cols[0].trim() : '';       // Col A: Affiliation No
-                        const uid = cols[1] ? cols[1].trim() : '';         // Col B: UID / Admission ID
-                        const className = cols[2] ? cols[2].trim() : '';   // Col C: Class
-                        const studentName = cols[3] ? cols[3].trim() : ''; // Col D: Student Name
+                    // 1-ാം നിര ഹെഡിംഗ് ആയതുകൊണ്ട് i = 1 മുതൽ ലൂപ്പ് തുടങ്ങുന്നു
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (!row || row.length === 0) continue;
+
+                        // എക്സൽ കോള ക്രമം അനുസരിച്ച്:
+                        const affNo = row[0] !== undefined ? String(row[0]).trim() : '';       // Col A: Affiliation No
+                        const uid = row[1] !== undefined ? String(row[1]).trim() : '';         // Col B: UID
+                        const className = row[2] !== undefined ? String(row[2]).trim() : '';   // Col C: Class
+                        const studentName = row[3] !== undefined ? String(row[3]).trim() : ''; // Col D: Student Name
 
                         if (affNo && studentName) {
                             await db.collection("colleges").doc(affNo).collection("students").add({
@@ -228,15 +237,15 @@
                     }
 
                     statusMsg.style.color = "#05c46b";
-                    statusMsg.innerText = `Successfully uploaded ${count} student records across colleges!`;
+                    statusMsg.innerText = `Successfully uploaded ${count} student records from Excel!`;
                     fileInput.value = "";
                 } catch (err) {
-                    console.error("Master Upload Error:", err);
+                    console.error("Excel Upload Error:", err);
                     statusMsg.style.color = "#fc5c65";
-                    statusMsg.innerText = "Failed to upload students data. Check file format.";
+                    statusMsg.innerText = "Failed to process Excel file. Check format.";
                 }
             };
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
     </script>
 </body>
