@@ -145,30 +145,46 @@
             window.location.replace('index.html');
         }
 
+        // അഡ്മിൻ പാനലിൽ കോളേജുകളുടെ ഡ്രോപ്ഡൗൺ കൃത്യമായി 1 മുതൽ ക്രമത്തിൽ ലോഡ് ചെയ്യാൻ
         async function loadCollegesDropdown() {
             const collegeSelect = document.getElementById('collegeSelect');
-            collegeSelect.innerHTML = '<option value="">Select College</option>';
+            collegeSelect.innerHTML = '<option value="">Loading colleges...</option>';
+            
             try {
                 const snapshot = await db.collection("colleges").get();
+                console.log("Total colleges found:", snapshot.size); // കൺസോളിൽ എത്ര കോളേജുണ്ടെന്ന് കാണാൻ
+                
                 let colleges = [];
                 snapshot.forEach(doc => {
                     colleges.push({ id: doc.id, ...doc.data() });
                 });
 
-                // അഫിലിയേഷൻ നമ്പറുകളുടെ അടിസ്ഥാനത്തിൽ 1 മുതൽ ക്രമമായി (Ascending Order) സോർട്ട് ചെയ്യുന്നു
-                colleges.sort((a, b) => parseInt(a.affiliationNo) - parseInt(b.affiliationNo));
+                // അഫിലിയേഷൻ നമ്പറുകളുടെ അടിസ്ഥാനത്തിൽ 1 മുതൽ ക്രമമായി സോർട്ട് ചെയ്യുന്നു
+                colleges.sort((a, b) => parseInt(a.affiliationNo || 0) - parseInt(b.affiliationNo || 0));
+
+                collegeSelect.innerHTML = '<option value="">Select College</option>';
+                
+                if (colleges.length === 0) {
+                    collegeSelect.innerHTML = '<option value="">No Colleges Found in Database</option>';
+                    return;
+                }
 
                 colleges.forEach(data => {
                     const opt = document.createElement('option');
                     opt.value = data.affiliationNo;
-                    opt.textContent = `${data.affiliationNo} - ${data.collegeName}`;
+                    opt.textContent = `${data.affiliationNo} - ${data.collegeName || 'Unnamed College'}`;
                     collegeSelect.appendChild(opt);
                 });
             } catch (err) {
                 console.error("Error loading colleges:", err);
+                collegeSelect.innerHTML = '<option value="">Error Loading Colleges</option>';
             }
         }
 
+        // പേജ് ലോഡ് ആകുമ്പോൾ തന്നെ ഫങ്ഷൻ കോൾ ചെയ്യുന്നു
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCollegesDropdown();
+        });
         // കോളേജ് ഡാറ്റ സിങ്ക് ഫങ്ഷൻ
         async function syncDataFromSheet() {
             const statusMsg = document.getElementById('statusMsg');
