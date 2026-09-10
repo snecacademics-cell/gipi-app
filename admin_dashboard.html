@@ -106,13 +106,14 @@
 
         <!-- എക്സൽ ഫയൽ നേരിട്ട് അപ്‌ലോഡ് ചെയ്യുന്ന കാർഡ് -->
         <div class="action-card" style="margin-top: 25px;">
-            <h3 style="color: #1e3c72; margin-top: 0;"><i class="fa-solid fa-file-excel"></i> Upload Students Excel File (.xlsx)</h3>
+            <h3 style="color: #1e3c72; margin-top: 0;"><i class="fa-solid fa-file-excel"></i> Upload Students Excel / CSV File</h3>
             <p style="color: #64748b; font-size: 14px;">Excel Columns Order: <b>AFLI. NO, UID, CLASS, NAME OF THE STUDENT</b>.</p>
             
-            <label style="font-weight: bold; font-size: 13px; color: #334155;">Select Excel File:</label>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
+            <label style="font-weight: bold; font-size: 13px; color: #334155;">Select File:</label>
+            <!-- എല്ലാ എക്സൽ, സിഎസ്‌വി ഫയലുകളും ദൃശ്യമാകുന്ന രീതിയിലുള്ള ആട്രിബ്യൂട്ട് -->
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
 
-            <button class="upload-btn" onclick="uploadExcelStudents()"><i class="fa-solid fa-upload"></i> Upload Excel Students Data</button>
+            <button class="upload-btn" onclick="uploadExcelStudents()"><i class="fa-solid fa-upload"></i> Upload Students Data</button>
             <div id="studentStatusMsg" class="status-msg"></div>
         </div>
     </div>
@@ -185,13 +186,13 @@
             }
         }
 
-        // നേരിട്ട് എക്സൽ ഫയൽ రీഡ് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യുന്ന ഫങ്ഷൻ
+        // എക്സൽ / സിഎസ്‌വി ഫയലുകൾ നേരിട്ട് റീഡ് ചെയ്ത് അപ്‌ലോഡ് ചെയ്യുന്ന ഫങ്ഷൻ
         async function uploadExcelStudents() {
             const fileInput = document.getElementById('excelFileInput');
             const statusMsg = document.getElementById('studentStatusMsg');
 
             if (fileInput.files.length === 0) {
-                alert("Please select an Excel file first!");
+                alert("Please select a file first!");
                 return;
             }
 
@@ -199,31 +200,26 @@
             const reader = new FileReader();
 
             statusMsg.style.color = "#2b6cb0";
-            statusMsg.innerText = "Reading Excel file and uploading...";
+            statusMsg.innerText = "Reading file and uploading students...";
 
             reader.onload = async function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
 
-                    // ആദ്യത്തെ ഷീറ്റ് എടുക്കുന്നു
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-
-                    // ഷീറ്റിലെ ഡാറ്റ ജാവാസ്ക്രിപ്റ്റ് അറേ (JSON) രൂപത്തിലേക്ക് മാറ്റുന്നു
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     let count = 0;
 
-                    // 1-ാം നിര ഹെഡിംഗ് ആയതുകൊണ്ട് i = 1 മുതൽ ലൂപ്പ് തുടങ്ങുന്നു
                     for (let i = 1; i < jsonData.length; i++) {
                         const row = jsonData[i];
                         if (!row || row.length === 0) continue;
 
-                        // എക്സൽ കോള ക്രമം അനുസരിച്ച്:
-                        const affNo = row[0] !== undefined ? String(row[0]).trim() : '';       // Col A: Affiliation No
-                        const uid = row[1] !== undefined ? String(row[1]).trim() : '';         // Col B: UID
-                        const className = row[2] !== undefined ? String(row[2]).trim() : '';   // Col C: Class
-                        const studentName = row[3] !== undefined ? String(row[3]).trim() : ''; // Col D: Student Name
+                        const affNo = row[0] !== undefined ? String(row[0]).trim() : '';       
+                        const uid = row[1] !== undefined ? String(row[1]).trim() : '';         
+                        const className = row[2] !== undefined ? String(row[2]).trim() : '';   
+                        const studentName = row[3] !== undefined ? String(row[3]).trim() : ''; 
 
                         if (affNo && studentName) {
                             await db.collection("colleges").doc(affNo).collection("students").add({
@@ -237,12 +233,12 @@
                     }
 
                     statusMsg.style.color = "#05c46b";
-                    statusMsg.innerText = `Successfully uploaded ${count} student records from Excel!`;
+                    statusMsg.innerText = `Successfully uploaded ${count} student records!`;
                     fileInput.value = "";
                 } catch (err) {
-                    console.error("Excel Upload Error:", err);
+                    console.error("Upload Error:", err);
                     statusMsg.style.color = "#fc5c65";
-                    statusMsg.innerText = "Failed to process Excel file. Check format.";
+                    statusMsg.innerText = "Failed to process file. Check format.";
                 }
             };
             reader.readAsArrayBuffer(file);
